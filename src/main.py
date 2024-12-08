@@ -5,7 +5,7 @@ from PySide6.QtGui import QIcon,QFont
 from PySide6.QtCore import QObject,QTimer,Qt,QSize
 import time
 qapp=QApplication([])
-icon=QIcon('../media/images/1.png')
+icon=QIcon(':/media/images/1.png')
 widgetslist=[]
 musicUrlList=['../media/audio/1.wav']
 musicNameList=['音乐1']
@@ -76,7 +76,12 @@ startTimeStamp=0
 lastEndStamp=0
 lastRecordStamp=0
 running=False
-timeDelta=0
+timeDelta=0        
+def getTime():
+    global startTimeStamp,timeDelta
+    return time.time()-startTimeStamp-timeDelta 
+def formatTime(data,round=False):
+    return '{:0>2d}'.format(int(data//3600))+':'+'{:0>2d}'.format((int(data)%3600)//60)+':'+'{:0>2d}'.format(int(data)%60)+('.'+'{:0>3d}'.format(int((data%1)*1000)) if not round else '')
 def startStop():
     global running,startTimeStamp,lastEndStamp,timeDelta,lastRecordStamp
     if running:
@@ -107,12 +112,7 @@ def clearRecord():
         recordTable.removeRow(0)
 startStopButton.clicked.connect(startStop)  
 recordButton.clicked.connect(writeRecord)     
-clearButton.clicked.connect(clearRecord)        
-def getTime():
-    global startTimeStamp,timeDelta
-    return time.time()-startTimeStamp-timeDelta 
-def formatTime(data,round=False):
-    return '{:0>2d}'.format(int(data//3600))+':'+'{:0>2d}'.format((int(data)%3600)//60)+':'+'{:0>2d}'.format(int(data)%60)+('.'+'{:0>3d}'.format(int((data%1)*1000)) if not round else '')
+clearButton.clicked.connect(clearRecord)
 
 newCountDown=QPushButton('新建',widgetslist[2])
 deleteCountDown=QPushButton('编辑',widgetslist[2])
