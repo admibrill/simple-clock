@@ -5,7 +5,7 @@ from PySide6.QtGui import QIcon,QFont
 from PySide6.QtCore import QObject,QTimer,Qt,QSize
 import time
 qapp=QApplication([])
-icon=QIcon(':/media/images/1.png')
+icon=QIcon('../media/images/1.png')
 widgetslist=[]
 musicUrlList=['../media/audio/1.wav']
 musicNameList=['音乐1']
@@ -414,7 +414,7 @@ class Alarm(QGroupBox):
         self.deleteLater()
         del self
 class AlarmEdit(QDialog):
-    def __init__(self,length,title,music,repeat,description,runnning):
+    def __init__(self,length,title,music,repeat,description,running):
         super().__init__()
         self.confirmed=False
         self.length=length
@@ -516,8 +516,8 @@ newAlarm.clicked.connect(onNewAlarm)
 deleteAlarm.clicked.connect(onDeleteAlarm)
 with open('../data/alarm.txt','r',encoding='utf-8') as f:
     for i in f.readlines():
-        timelength,title,music,repeat1,repeat2,repeat3,repeat4,repeat5,repeat6,repeat7,description,running=i.split(':/:')
-        alarm=Alarm(alarmScrollAreaWidget,int(timelength),title,int(music),list(map(bool,map(int,[repeat1,repeat2,repeat3,repeat4,repeat5,repeat6,repeat7]))),description,bool(int(running)))
+        timelength,title,music,repeat1,repeat2,repeat3,repeat4,repeat5,repeat6,repeat7,description,running1=i.split(':/:')
+        alarm=Alarm(alarmScrollAreaWidget,int(timelength),title,int(music),list(map(bool,map(int,[repeat1,repeat2,repeat3,repeat4,repeat5,repeat6,repeat7]))),description,bool(int(running1)))
         alarm.launch()
         alarm.show()
         alarmList.append(alarm)
@@ -525,16 +525,16 @@ with open('../data/alarm.txt','r',encoding='utf-8') as f:
 def update():
     global startTimeStamp,timeDelta
     size1_1=widgetslist[0].size()
-    size1_2=widgetslist[1].size()
-    size1_3=widgetslist[1].size()
     nowtime=time.strftime('%H:%M:%S')
     labelTime.setText(nowtime)
     size2=labelTime.size()
+    labelTime.move(size1_1.width()/2-size2.width()/2,size1_1.height()/2-size2.height()/2)
+
+    size1_2=widgetslist[1].size()
     size3=recorder.size()
     size4=startStopButton.size()
     size5=recordButton.size()
     size6=clearButton.size()
-    labelTime.move(size1_1.width()/2-size2.width()/2,size1_1.height()/2-size2.height()/2)
     recorder.move(size1_2.width()/2-size3.width()/2,10)
     startStopButton.move(size1_2.width()/2-size5.width()/2-10-size4.width(),size1_2.height()-10-size4.height())
     recordButton.move(size1_2.width()/2-size5.width()/2,size1_2.height()-10-size5.height())
@@ -545,6 +545,12 @@ def update():
     recordTable.setColumnWidth(0,40)
     recordTable.setColumnWidth(1,size7.width()/2-20)
     recordTable.setColumnWidth(2,size7.width()/2-20)
+    if running:
+        stampDelta=getTime()
+        rec=formatTime(stampDelta)
+        recorder.setText(rec)
+
+    size1_3=widgetslist[2].size()
     size8=newCountDown.size()
     size9=deleteCountDown.size()
     newCountDown.move(size1_3.width()/2-5-size8.width(),size1_3.height()-10-size8.height())
@@ -558,6 +564,7 @@ def update():
     for i in range(len(countDownList)):
         countDownList[i].move(size10.width()/2-widthPerRow/2+(i%numPerRow)*(10+size11.width()),10+(i//numPerRow)*(10+size11.height()))
         countDownList[i].updating()
+    
     size8=newAlarm.size()
     size9=deleteAlarm.size()
     newAlarm.move(size1_3.width()/2-5-size8.width(),size1_3.height()-10-size8.height())
@@ -571,10 +578,7 @@ def update():
     for i in range(len(alarmList)):
         alarmList[i].move(size10.width()/2-widthPerRow/2+(i%numPerRow)*(10+size11.width()),10+(i//numPerRow)*(10+size11.height()))
         alarmList[i].updating()
-    if running:
-        stampDelta=getTime()
-        rec=formatTime(stampDelta)
-        recorder.setText(rec)
+    
 
 timer=QTimer()
 timer.start(0.05)
